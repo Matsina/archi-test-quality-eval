@@ -8,7 +8,7 @@ export class MailService implements MailServiceInterface {
       email,
       'Objet : ',
       subject,
-      'Corp du mail : ',
+      'Corps du mail : ',
       body,
     );
   }
