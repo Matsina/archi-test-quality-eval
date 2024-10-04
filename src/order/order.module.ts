@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import OrderController from './infrastructure/presentation/order/order.controller';
-import { Order } from './domain/entity/order/order.entity';
 import { OrderItem } from './domain/entity/order/order-item.entity';
 import { CreateOrderService } from 'src/order/application/use-case/order/create-order.service';
 import { PayOrderService } from 'src/order/application/use-case/order/pay-order.service';
@@ -25,6 +24,7 @@ import { StockManagementProductService } from './application/use-case/product/st
 import { MailServiceInterface } from './domain/port/mail/MailServiceInterface';
 import { CreatePromotionOrderService } from './application/use-case/promotion/create-promotion.service';
 import { PromotionRepositoryInterface } from './domain/port/persistance/promotion/promotion.repository.interface';
+import { Order } from './domain/entity/order/order.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, Promotion])],
