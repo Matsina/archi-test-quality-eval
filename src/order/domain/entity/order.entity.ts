@@ -156,25 +156,6 @@ export class Order {
     }
   }
 
-  // methode factory : permet de ne pas utiliser le constructor
-  // car le constructor est utilisé par typeorm
-  // public createOrder(createOrderCommand: CreateOrderCommand): Order {
-  //   this.verifyOrderCommandIsValid(createOrderCommand);
-  //   this.verifyMaxItemIsValid(createOrderCommand);
-
-  //   this.orderItems = createOrderCommand.items.map(
-  //     (item) => new OrderItem(item),
-  //   );
-
-  //   this.customerName = createOrderCommand.customerName;
-  //   this.shippingAddress = createOrderCommand.shippingAddress;
-  //   this.invoiceAddress = createOrderCommand.invoiceAddress;
-  //   this.status = OrderStatus.PENDING;
-  //   this.price = this.calculateOrderAmount(createOrderCommand.items);
-
-  //   return this;
-  // }
-
   private calculateOrderAmount(items: ItemDetailCommand[]): number {
     const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
 
