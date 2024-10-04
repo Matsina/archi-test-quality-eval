@@ -1,4 +1,4 @@
-import { ItemDetailCommand, OrderItem } from '../entity/order-item.entity';
+import { ItemDetailCommand, OrderItem } from './order-item.entity';
 import {
   Column,
   CreateDateColumn,
@@ -95,7 +95,7 @@ export class Order {
     this.verifyMaxItemIsValid(createOrderCommand);
 
     this.orderItems = createOrderCommand.items.map(
-      (item) => new OrderItem(item),
+      (item) => new OrderItem(item, product),
     );
 
     this.customerName = createOrderCommand.customerName;

@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import OrderController from './infrastructure/presentation/order.controller';
-import { Order } from './domain/entity/order.entity';
-import { OrderItem } from './domain/entity/order-item.entity';
-import { CreateOrderService } from 'src/order/application/use-case/create-order.service';
-import { PayOrderService } from 'src/order/application/use-case/pay-order.service';
-import { CancelOrderService } from 'src/order/application/use-case/cancel-order.service';
-import { SetInvoiceAddressOrderService } from 'src/order/application/use-case/set-invoice-address-order.service';
-import { SetShippingAddressOrderService } from 'src/order/application/use-case/set-shipping-address-order.service';
-import OrderRepositoryTypeOrm from 'src/order/infrastructure/persistance/order.repository';
-import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order.repository.interface';
-import { GenerateInvoiceService } from 'src/order/application/use-case/generate-invoice.service';
+import { Order } from './domain/entity/order/order.entity';
+import { OrderItem } from './domain/entity/order/order-item.entity';
+import { CreateOrderService } from 'src/order/application/use-case/order/create-order.service';
+import { PayOrderService } from 'src/order/application/use-case/order/pay-order.service';
+import { CancelOrderService } from 'src/order/application/use-case/order/cancel-order.service';
+import { SetInvoiceAddressOrderService } from 'src/order/application/use-case/order/set-invoice-address-order.service';
+import { SetShippingAddressOrderService } from 'src/order/application/use-case/order/set-shipping-address-order.service';
+import OrderRepositoryTypeOrm from 'src/order/infrastructure/persistance/order/order.repository';
+import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order/order.repository.interface';
+import { GenerateInvoiceService } from 'src/order/application/use-case/order/generate-invoice.service';
 import { PdfGeneratorServiceInterface } from 'src/order/domain/port/pdf/pdf-generator.service.interface';
 import { PdfGeneratorService } from 'src/order/infrastructure/pdf/pdf-generator.service';
+import { CreateProductService } from './application/use-case/product/create-product.service';
+import { ProductRepositoryInterface } from './domain/port/persistance/product/product.repository.interface';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, OrderItem])],
@@ -64,19 +66,18 @@ import { PdfGeneratorService } from 'src/order/infrastructure/pdf/pdf-generator.
       },
       inject: [OrderRepositoryTypeOrm],
     },
-
-    // pour pouvoir gérer l'inversion de dépendance
-    // du service CreateOrderService
-    // j'utilise le système de useFactory de nest
     {
-      // quand j'enregistre la classe CreateOrderService
       provide: CreateOrderService,
-      // je demande à Nest Js de créer une instance de cette classe
       useFactory: (orderRepository: OrderRepositoryInterface) => {
         return new CreateOrderService(orderRepository);
       },
-      // en lui injectant une instance de OrderRepositoryTypeOrm
-      // à la place de l'interface qui est utilisée dans le constructeur de CreateOrderService
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: CreateProductService,
+      useFactory: (productRepository: ProductRepositoryInterface) => {
+        return new CreateProductService(productRepository);
+      },
       inject: [OrderRepositoryTypeOrm],
     },
   ],

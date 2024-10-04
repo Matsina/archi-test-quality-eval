@@ -1,5 +1,6 @@
-import { Order } from '../entity/order.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from './order.entity';
+import { Product } from '../product/product.entity';
 
 export interface ItemDetailCommand {
   productName: string;
@@ -30,7 +31,12 @@ export class OrderItem {
   @ManyToOne(() => Order, (order) => order.orderItems)
   order: Order;
 
-  constructor(itemCommand: ItemDetailCommand) {
+  @ManyToOne(() => Product, (product) => product.orderItems, {
+    nullable: false,
+  })
+  product: Product;
+
+  constructor(itemCommand: ItemDetailCommand, product: Product) {
     if (!itemCommand) {
       return;
     }
@@ -43,5 +49,6 @@ export class OrderItem {
     this.productName = itemCommand.productName;
     this.quantity = itemCommand.quantity;
     this.price = itemCommand.price;
+    this.product = product;
   }
 }

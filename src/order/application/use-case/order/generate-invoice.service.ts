@@ -1,5 +1,5 @@
 import { PdfGeneratorServiceInterface } from 'src/order/domain/port/pdf/pdf-generator.service.interface';
-import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order.repository.interface';
+import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order/order.repository.interface';
 
 export class GenerateInvoiceService {
   constructor(

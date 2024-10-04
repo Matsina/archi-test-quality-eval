@@ -1,7 +1,7 @@
-import { OrderRepositoryInterface } from '../../domain/port/persistance/order.repository.interface';
+import { OrderRepositoryInterface } from '../../../domain/port/persistance/order/order.repository.interface';
 import { NotFoundException } from '@nestjs/common';
-import { CancelOrderService } from '../use-case/cancel-order.service';
-import { Order, OrderStatus } from '../../domain/entity/order.entity';
+import { SetInvoiceAddressOrderService } from './set-invoice-address-order.service';
+import { Order, OrderStatus } from '../../../domain/entity/order/order.entity';
 
 class OrderRepositoryFake {
   async save(order) {
@@ -17,12 +17,12 @@ class OrderRepositoryFake {
         { productName: 'item 1', price: 10, quantity: 1 },
         { productName: 'item 1', price: 10, quantity: 1 },
       ],
-      shippingAddress: 'Shipping Address',
+      shippingAddress: '',
       invoiceAddress: 'Invoice Address',
     });
 
     order.id = id;
-    order.status = OrderStatus.SHIPPED;
+    order.status = OrderStatus.SHIPPING_ADDRESS_SET;
 
     return order;
   }
@@ -31,12 +31,14 @@ class OrderRepositoryFake {
 const orderRepositoryFake =
   new OrderRepositoryFake() as OrderRepositoryInterface;
 
-describe("An order can't be canceled if it has been shipped", () => {
+describe("L'adresse de facturation ne peut être définie si celle de livraison ne l'est pas", () => {
   it('should return an error', async () => {
-    const cancelOrderService = new CancelOrderService(orderRepositoryFake);
+    const invoiceAddressOrderService = new SetInvoiceAddressOrderService(
+      orderRepositoryFake,
+    );
 
     await expect(
-      cancelOrderService.execute('1', 'Votre produit est naze'),
+      invoiceAddressOrderService.execute('1', 'Martin Ville'),
     ).rejects.toThrow();
   });
 });

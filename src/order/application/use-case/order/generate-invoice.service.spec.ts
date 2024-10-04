@@ -1,6 +1,6 @@
-import { OrderRepositoryInterface } from '../../domain/port/persistance/order.repository.interface';
-import { Order } from '../../domain/entity/order.entity';
-import { PayOrderService } from '../../application/use-case/pay-order.service';
+import { OrderRepositoryInterface } from '../../../domain/port/persistance/order/order.repository.interface';
+import { Order } from '../../../domain/entity/order/order.entity';
+import { GenerateInvoiceService } from './generate-invoice.service';
 
 class OrderRepositoryFake {
   async findById(orderId: string): Promise<Order> {
@@ -21,13 +21,24 @@ class OrderRepositoryFake {
   }
 }
 
+class PdfGeneratorServiceFake {
+  async generatePdf(text: string): Promise<Buffer> {
+    return Buffer.from(text);
+  }
+}
+
 const orderRepositoryFake =
   new OrderRepositoryFake() as OrderRepositoryInterface;
 
-describe("an order can't be paid if the max amount is hit", () => {
-  it('should return an error', async () => {
-    const payOrderService = new PayOrderService(orderRepositoryFake);
+const pdfGeneratorServiceFake = new PdfGeneratorServiceFake();
 
-    await expect(payOrderService.execute('1')).rejects.toThrow();
+describe("an invoice can't be generated if the order status is PENDING", () => {
+  it('should return an error', async () => {
+    const generateInvoiceService = new GenerateInvoiceService(
+      orderRepositoryFake,
+      pdfGeneratorServiceFake,
+    );
+
+    await expect(generateInvoiceService.generateInvoice('1')).rejects.toThrow();
   });
 });
