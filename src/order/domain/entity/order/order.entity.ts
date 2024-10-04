@@ -9,6 +9,7 @@ import {
 import { Expose } from 'class-transformer';
 
 import { BadRequestException } from '@nestjs/common';
+import { Product } from '../product/product.entity';
 
 export interface CreateOrderCommand {
   items: ItemDetailCommand[];
@@ -93,10 +94,6 @@ export class Order {
 
     this.verifyOrderCommandIsValid(createOrderCommand);
     this.verifyMaxItemIsValid(createOrderCommand);
-
-    this.orderItems = createOrderCommand.items.map(
-      (item) => new OrderItem(item, product),
-    );
 
     this.customerName = createOrderCommand.customerName;
     this.shippingAddress = createOrderCommand.shippingAddress;

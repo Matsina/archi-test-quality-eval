@@ -3,7 +3,7 @@ import { Order } from './order.entity';
 import { Product } from '../product/product.entity';
 
 export interface ItemDetailCommand {
-  productName: string;
+  productName: Product;
   price: number;
   quantity: number;
 }
@@ -46,7 +46,6 @@ export class OrderItem {
       );
     }
 
-    this.productName = itemCommand.productName;
     this.quantity = itemCommand.quantity;
     this.price = itemCommand.price;
     this.product = product;
