@@ -9,7 +9,7 @@ import {
 import { Expose } from 'class-transformer';
 
 import { BadRequestException } from '@nestjs/common';
-import { Product } from '../product/product.entity';
+import { Promotion } from '../promotion/promotion.entity';
 
 export interface CreateOrderCommand {
   items: ItemDetailCommand[];
@@ -86,6 +86,10 @@ export class Order {
   @Column({ nullable: true })
   @Expose({ groups: ['group_orders'] })
   private cancelReason: string | null;
+
+  @Column({ nullable: true })
+  @Expose({ groups: ['group_orders'] })
+  codePromo: string | null;
 
   public constructor(createOrderCommand?: CreateOrderCommand) {
     if (!createOrderCommand) {
@@ -205,5 +209,20 @@ export class Order {
       .map((item) => item.productName)
       .join(', ');
     return `invoice number ${this.id}, with items: ${itemsNames}`;
+  }
+
+  checkIfAddItemsToBasket() {
+    if (this.status !== OrderStatus.PENDING) {
+      throw new Error("Impossible d'ajouter un produit au panier");
+    }
+    return;
+  }
+
+  addPromotion(promotion: Promotion) {
+    if (!promotion) {
+      throw new Error('Cannot add promotion');
+    }
+    this.codePromo = promotion.code;
+    this.price = this.price - promotion.amount;
   }
 }

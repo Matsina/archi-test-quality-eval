@@ -15,9 +15,19 @@ import { PdfGeneratorServiceInterface } from 'src/order/domain/port/pdf/pdf-gene
 import { PdfGeneratorService } from 'src/order/infrastructure/pdf/pdf-generator.service';
 import { CreateProductService } from './application/use-case/product/create-product.service';
 import { ProductRepositoryInterface } from './domain/port/persistance/product/product.repository.interface';
+import { Product } from './domain/entity/product/product.entity';
+import { Promotion } from './domain/entity/promotion/promotion.entity';
+import { DeleteProductService } from './application/use-case/product/delete-product.service';
+import { ModifyProductService } from './application/use-case/product/modify-product.service';
+import { ListProductService } from './application/use-case/product/list-product.service';
+import { ProductToBasketService } from './application/use-case/product/product-to-basket.service';
+import { StockManagementProductService } from './application/use-case/product/stock-management-product.service';
+import { MailServiceInterface } from './domain/port/mail/MailServiceInterface';
+import { CreatePromotionOrderService } from './application/use-case/promotion/create-promotion.service';
+import { PromotionRepositoryInterface } from './domain/port/persistance/promotion/promotion.repository.interface';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem])],
+  imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, Promotion])],
   controllers: [OrderController],
 
   providers: [
@@ -77,6 +87,72 @@ import { ProductRepositoryInterface } from './domain/port/persistance/product/pr
       provide: CreateProductService,
       useFactory: (productRepository: ProductRepositoryInterface) => {
         return new CreateProductService(productRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: DeleteProductService,
+      useFactory: (productRepository: ProductRepositoryInterface) => {
+        return new DeleteProductService(productRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: CreateProductService,
+      useFactory: (productRepository: ProductRepositoryInterface) => {
+        return new CreateProductService(productRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: ModifyProductService,
+      useFactory: (productRepository: ProductRepositoryInterface) => {
+        return new ModifyProductService(productRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: ListProductService,
+      useFactory: (productRepository: ProductRepositoryInterface) => {
+        return new ListProductService(productRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: ProductToBasketService,
+      useFactory: (
+        productRepository: ProductRepositoryInterface,
+        orderRepository: OrderRepositoryInterface,
+      ) => {
+        return new ProductToBasketService(productRepository, orderRepository);
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: StockManagementProductService,
+      useFactory: (
+        productRepository: ProductRepositoryInterface,
+        orderRepository: OrderRepositoryInterface,
+        sendMailService: MailServiceInterface,
+      ) => {
+        return new StockManagementProductService(
+          orderRepository,
+          productRepository,
+          sendMailService,
+        );
+      },
+      inject: [OrderRepositoryTypeOrm],
+    },
+    {
+      provide: CreatePromotionOrderService,
+      useFactory: (
+        orderRepository: OrderRepositoryInterface,
+        promotionRepository: PromotionRepositoryInterface,
+      ) => {
+        return new CreatePromotionOrderService(
+          orderRepository,
+          promotionRepository,
+        );
       },
       inject: [OrderRepositoryTypeOrm],
     },

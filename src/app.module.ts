@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { OrderModule } from './order/order.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ProductModule } from './order/product.module';
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { ProductModule } from './order/product.module';
       autoLoadEntities: true,
     }),
     OrderModule,
-    ProductModule,
     EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],

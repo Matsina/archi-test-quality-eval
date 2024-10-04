@@ -1,25 +1,39 @@
-// import { NotFoundException } from '@nestjs/common';
-// import { ProductRepositoryInterface } from 'src/order/domain/port/persistance/product/product.repository.interface';
-// import { OrderItem } from 'src/order/domain/entity/order/order-item.entity';
-// import { CreateOrderCommand } from 'src/order/domain/entity/order/order.entity';
+import { NotFoundException } from '@nestjs/common';
+import { Product } from 'aws-sdk/clients/ssm';
+import { MailServiceInterface } from 'src/order/domain/port/mail/MailServiceInterface';
+import { OrderRepositoryInterface } from 'src/order/domain/port/persistance/order/order.repository.interface';
+import { ProductRepositoryInterface } from 'src/order/domain/port/persistance/product/product.repository.interface';
+export class StockManagementProductService {
+  constructor(
+    private readonly orderRepository: OrderRepositoryInterface,
+    private readonly productRepository: ProductRepositoryInterface,
+    private readonly sendMailService: MailServiceInterface,
+  ) {}
 
-// export class StockManagementProductService {
-//   constructor(private readonly productRepository: ProductRepositoryInterface) {}
+  async execute(orderId: string): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
 
-//   public async execute(createOrderCommand: CreateOrderCommand): Promise<void> {
-//     for (const item of createOrderCommand.items) {
-//       const product = await this.productRepository.findByProductName(item.productName);
+    for (const item of order.orderItems) {
+      const product = await this.productRepository.findById(item.product.id);
 
-//       if (!product) {
-//         throw new NotFoundException(`Product ${item.productName} not found`);
-//       }
+      if (!product) {
+        throw new NotFoundException('Pas de produit');
+      }
 
-//       if (product.stock < item.quantity) {
-//         throw new Error(`Insufficient stock for product ${item.productName}`);
-//       }
+      if (product.decrementStockProduct(item.quantity) === 0) {
+        this.sendMailStockZero(item.productName);
+      }
 
-//       product.stock -= item.quantity;
-//       await this.productRepository.save(product);
-//     }
-//   }
-// }
+      await this.productRepository.save(product);
+    }
+  }
+
+  private sendMailStockZero(product: Product) {
+    const productName = product;
+    this.sendMailService.sendEmail(
+      'admin@mail.com',
+      'Plus de stock',
+      `Le produit ${productName} présente un stock à 0.`,
+    );
+  }
+}
