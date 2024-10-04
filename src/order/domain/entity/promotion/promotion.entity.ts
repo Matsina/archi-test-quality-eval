@@ -27,9 +27,11 @@ export class Promotion {
     if (!createPromotion.name || !createPromotion.code) {
       throw new Error('Missing required fields');
     }
+    if (!createPromotion.amount) {
+      this.amount = 1500;
+    }
     this.name = createPromotion.name;
     this.code = createPromotion.code;
-    if (createPromotion.amount === null) this.amount = 1500;
-    else this.amount = createPromotion.amount;
+    this.amount = createPromotion.amount;
   }
 }
